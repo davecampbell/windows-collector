@@ -1,0 +1,12 @@
+# Runtime data—not documentation
+screenshots/
+spool/
+telemetry/
+*.png
+*.jpg
+*.jpeg
+
+# Local credentials/configuration
+.env
+*.local.*
+secrets/
