@@ -8,8 +8,7 @@ Set shell = CreateObject("WScript.Shell")
 
 command = _
   """C:\Program Files\InfluxData\telegraf\telegraf.exe""" & _
-  " --config ""C:\Program Files\InfluxData\telegraf\telegraf.conf""" & _
-  " --config-directory ""C:\Program Files\InfluxData\telegraf\telegraf.d"""
+  " --config ""C:\Program Files\InfluxData\telegraf\telegraf-activity.conf"""
 
 ' 0 = hidden window; False = do not wait for the long-running Telegraf process.
 shell.Run command, 0, False

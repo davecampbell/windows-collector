@@ -12,7 +12,7 @@ This package records every visible top-level window with a nonempty title bar on
 
 1. Copy `foreground-window.ps1` to `C:\ProgramData\Telegraf\scripts\foreground-window.ps1`.
 2. Copy `start-telegraf-hidden.vbs` to `C:\ProgramData\Telegraf\scripts\start-telegraf-hidden.vbs` for the recommended hidden Scheduled Task launcher.
-3. Copy `telegraf-activity.conf` to Telegraf's `telegraf.d` configuration directory. It includes a local telemetry-spool output at `C:\ProgramData\Telegraf\spool\telemetry\activity.lp`.
+3. Copy `telegraf-activity.conf` to `C:\Program Files\InfluxData\telegraf\telegraf-activity.conf`, beside `telegraf.exe`. It includes a local telemetry-spool output at `C:\ProgramData\Telegraf\spool\telemetry\activity.lp` and leaves the default `telegraf.conf` untouched.
 4. Create `C:\ProgramData\Telegraf\screen-captures` and `C:\ProgramData\Telegraf\spool\telemetry`, and restrict them to the intended account and administrators.
 5. Run the collector in the signed-in user's session. A standard Windows service runs outside that interactive session and will not reliably see the foreground window or capture the display. A practical approach is a Scheduled Task set to **Run only when user is logged on**, started at logon, that launches a user-scoped Telegraf instance with this config.
 6. Test the script interactively before deploying:
@@ -35,10 +35,10 @@ Window inventory runs every minute. In `telegraf-activity.conf`, change the valu
 
 The script accepts any whole number of minutes from 1 through 1,440. Restart the user-session Telegraf task after changing its configuration.
 
-When starting Telegraf, include its configuration directory as well as the main configuration file. The collector definition and its output are stored in `telegraf.d`:
+Start Telegraf with the dedicated collector configuration file beside the executable:
 
 ```powershell
-.\telegraf.exe --config '.\telegraf.conf' --config-directory '.\telegraf.d'
+.\telegraf.exe --config '.\telegraf-activity.conf'
 ```
 
 ## Data handling

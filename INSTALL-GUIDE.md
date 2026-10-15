@@ -51,12 +51,12 @@ Copy this project's files as follows:
 ```text
 foreground-window.ps1  → C:\ProgramData\Telegraf\scripts\foreground-window.ps1
 start-telegraf-hidden.vbs → C:\ProgramData\Telegraf\scripts\start-telegraf-hidden.vbs
-telegraf-activity.conf → C:\Program Files\InfluxData\telegraf\telegraf.d\activity.conf
+telegraf-activity.conf → C:\Program Files\InfluxData\telegraf\telegraf-activity.conf
 ```
 
-Create the `telegraf.d` folder if it does not exist. `activity.conf` includes a local file output at `C:\ProgramData\Telegraf\spool\telemetry\activity.lp`, so Telegraf has a valid output from the first run. Edit or add an output later for your selected local spool, UNC path, or central system. Use a UNC path such as `\\fileserver\EndpointTelemetry\...`; do not use a mapped drive letter.
+`telegraf-activity.conf` is a dedicated, complete configuration file. It is not automatically discovered; the launch command explicitly passes it with `--config`. This leaves the default `telegraf.conf` unchanged. The activity configuration includes a local file output at `C:\ProgramData\Telegraf\spool\telemetry\activity.lp`, so Telegraf has a valid output from the first run. Edit or add an output later for your selected local spool, UNC path, or central system. Use a UNC path such as `\\fileserver\EndpointTelemetry\...`; do not use a mapped drive letter.
 
-To change screenshot frequency, edit the value after `-CaptureEveryMinutes` in `activity.conf`: use `2` for every two minutes, `5` for every five minutes, or `15` for the default every 15 minutes. Keep the Telegraf input interval at `1m` so open-window inventory is still recorded every minute. Restart the Scheduled Task after editing the configuration.
+To change screenshot frequency, edit the value after `-CaptureEveryMinutes` in `telegraf-activity.conf`: use `2` for every two minutes, `5` for every five minutes, or `15` for the default every 15 minutes. Keep the Telegraf input interval at `1m` so open-window inventory is still recorded every minute. Restart the Scheduled Task after editing the configuration.
 
 ## 4. Test the PowerShell collector interactively
 
@@ -78,8 +78,7 @@ From the Telegraf installation directory, run Telegraf once with its main config
 
 ```powershell
 & .\telegraf.exe `
-  --config '.\telegraf.conf' `
-  --config-directory '.\telegraf.d' `
+  --config '.\telegraf-activity.conf' `
   --test
 ```
 
@@ -89,11 +88,10 @@ For a normal, continuous run, include the same configuration directory:
 
 ```powershell
 & .\telegraf.exe `
-  --config '.\telegraf.conf' `
-  --config-directory '.\telegraf.d'
+  --config '.\telegraf-activity.conf'
 ```
 
-If Telegraf reports `no outputs found`, it loaded a configuration without any enabled `[[outputs.*]]` table. Confirm `telegraf.d\activity.conf` is present and that `--config-directory '.\telegraf.d'` is included. A configuration used for a normal run must have at least one input and one output; `--test` is the exception.
+If Telegraf reports `no outputs found`, `telegraf-activity.conf` does not contain an enabled `[[outputs.*]]` table. Confirm that its `[[outputs.file]]` section is present and uncommented. A configuration used for a normal run must have at least one input and one output; `--test` is the exception.
 
 ## 6. Run it in the interactive user session
 
