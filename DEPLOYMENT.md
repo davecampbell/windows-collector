@@ -66,7 +66,7 @@ Create a Scheduled Task for each enrolled user:
 - Trigger: at user logon; restart on failure.
 - Security option: **Run only when user is logged on**.
 - Account: the intended collecting user, without elevated privileges unless separately needed.
-- Action: start the user-scoped Telegraf process/configuration that invokes `foreground-window.ps1`.
+- Action: use `wscript.exe` to launch `start-telegraf-hidden.vbs`, which starts the user-scoped Telegraf process/configuration without a visible console window.
 
 Do not rely on the machine-wide Telegraf service alone for desktop capture. If more than one user can be signed in concurrently, run one collector per interactive session and keep both user and session ID in the telemetry.
 

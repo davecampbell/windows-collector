@@ -6,20 +6,34 @@ This package records every visible top-level window with a nonempty title bar on
 
 - [Install guide](INSTALL-GUIDE.md): download and verify Telegraf, install it on Windows, test the collector, and run it in the signed-in user's session.
 - [Deployment options](DEPLOYMENT.md): choose direct shared-drive writes, a resilient local spool and uploader, or separate telemetry and image storage; includes identity, retention, and security guidance.
+- [Network storage and upload](NETWORK-STORAGE.md): configure direct OMV UNC writes or prepare the recommended local-spool-and-upload approach.
 
 ## Quick start
 
 1. Copy `foreground-window.ps1` to `C:\ProgramData\Telegraf\scripts\foreground-window.ps1`.
-2. Copy `telegraf-activity.conf` to Telegraf's `telegraf.d` configuration directory. It includes a local telemetry-spool output at `C:\ProgramData\Telegraf\spool\telemetry\activity.lp`.
-3. Create `C:\ProgramData\Telegraf\screen-captures` and `C:\ProgramData\Telegraf\spool\telemetry`, and restrict them to the intended account and administrators.
-4. Run the collector in the signed-in user's session. A standard Windows service runs outside that interactive session and will not reliably see the foreground window or capture the display. A practical approach is a Scheduled Task set to **Run only when user is logged on**, started at logon, that launches a user-scoped Telegraf instance with this config.
-5. Test the script interactively before deploying:
+2. Copy `start-telegraf-hidden.vbs` to `C:\ProgramData\Telegraf\scripts\start-telegraf-hidden.vbs` for the recommended hidden Scheduled Task launcher.
+3. Copy `telegraf-activity.conf` to Telegraf's `telegraf.d` configuration directory. It includes a local telemetry-spool output at `C:\ProgramData\Telegraf\spool\telemetry\activity.lp`.
+4. Create `C:\ProgramData\Telegraf\screen-captures` and `C:\ProgramData\Telegraf\spool\telemetry`, and restrict them to the intended account and administrators.
+5. Run the collector in the signed-in user's session. A standard Windows service runs outside that interactive session and will not reliably see the foreground window or capture the display. A practical approach is a Scheduled Task set to **Run only when user is logged on**, started at logon, that launches a user-scoped Telegraf instance with this config.
+6. Test the script interactively before deploying:
 
    ```powershell
    powershell.exe -NoProfile -ExecutionPolicy Bypass -File C:\ProgramData\Telegraf\scripts\foreground-window.ps1 -CaptureScreenshot -CaptureEveryMinutes 1
    ```
 
 The command emits one JSON object. Telegraf's `inputs.exec` input parses it every minute.
+
+### Screenshot schedule
+
+Window inventory runs every minute. In `telegraf-activity.conf`, change the value after `-CaptureEveryMinutes` to select the screenshot interval:
+
+| Value | Screenshot cadence |
+|---:|---|
+| `2` | Every 2 minutes |
+| `5` | Every 5 minutes |
+| `15` | Every 15 minutes (default) |
+
+The script accepts any whole number of minutes from 1 through 1,440. Restart the user-session Telegraf task after changing its configuration.
 
 When starting Telegraf, include its configuration directory as well as the main configuration file. The collector definition and its output are stored in `telegraf.d`:
 

@@ -50,10 +50,13 @@ Copy this project's files as follows:
 
 ```text
 foreground-window.ps1  → C:\ProgramData\Telegraf\scripts\foreground-window.ps1
+start-telegraf-hidden.vbs → C:\ProgramData\Telegraf\scripts\start-telegraf-hidden.vbs
 telegraf-activity.conf → C:\Program Files\InfluxData\telegraf\telegraf.d\activity.conf
 ```
 
 Create the `telegraf.d` folder if it does not exist. `activity.conf` includes a local file output at `C:\ProgramData\Telegraf\spool\telemetry\activity.lp`, so Telegraf has a valid output from the first run. Edit or add an output later for your selected local spool, UNC path, or central system. Use a UNC path such as `\\fileserver\EndpointTelemetry\...`; do not use a mapped drive letter.
+
+To change screenshot frequency, edit the value after `-CaptureEveryMinutes` in `activity.conf`: use `2` for every two minutes, `5` for every five minutes, or `15` for the default every 15 minutes. Keep the Telegraf input interval at `1m` so open-window inventory is still recorded every minute. Restart the Scheduled Task after editing the configuration.
 
 ## 4. Test the PowerShell collector interactively
 
@@ -94,15 +97,15 @@ If Telegraf reports `no outputs found`, it loaded a configuration without any en
 
 ## 6. Run it in the interactive user session
 
-Create a Scheduled Task that launches Telegraf at user logon:
+Create a Scheduled Task that launches Telegraf at user logon without exposing a console window:
 
 - **General:** choose the intended account and select **Run only when user is logged on**.
 - **Triggers:** At log on for that user.
-- **Actions → Program/script:** `C:\Program Files\InfluxData\telegraf\telegraf.exe`
-- **Arguments:** `--config "C:\Program Files\InfluxData\telegraf\telegraf.conf" --config-directory "C:\Program Files\InfluxData\telegraf\telegraf.d"`
+- **Actions → Program/script:** `C:\Windows\System32\wscript.exe`
+- **Arguments:** `"C:\ProgramData\Telegraf\scripts\start-telegraf-hidden.vbs"`
 - **Settings:** restart on failure; do not start a second instance if one is already running.
 
-If the task runs under a managed/domain account, give that account the minimum required NTFS and network-share permissions. A per-user task is required for each simultaneously active session. The task should have no more privilege than it needs.
+`wscript.exe` launches the supplied Visual Basic Script without a console window; the script starts Telegraf hidden. Do not use `cscript.exe`, which is a console host. If the task runs under a managed/domain account, give that account the minimum required NTFS and network-share permissions. A per-user task is required for each simultaneously active session. The task should have no more privilege than it needs.
 
 ## 7. Optional: system-wide Telegraf service
 
