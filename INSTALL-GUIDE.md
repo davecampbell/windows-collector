@@ -72,6 +72,8 @@ While signed in as the intended collecting user, run:
 
 It should write JSON to the console and create a PNG. Verify that it lists several visible windows, correctly marks one `is_foreground`, and records the expected user/session. A blank result usually means the script is running outside the interactive desktop or against a locked session.
 
+Open the resulting PNG's Properties > Details and compare its pixel dimensions with the Windows display resolution. The collector requests per-monitor DPI awareness so it captures native pixels even when Windows display scaling is above 100%.
+
 ## 5. Test the Telegraf configuration
 
 From the Telegraf installation directory, run Telegraf once with its main config and the activity configuration directory:

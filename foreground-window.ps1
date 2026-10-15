@@ -27,6 +27,12 @@ public static class ForegroundWindowApi
     public static extern bool IsWindowVisible(IntPtr hWnd);
 
     [DllImport("user32.dll", SetLastError = true)]
+    public static extern bool SetProcessDPIAware();
+
+    [DllImport("user32.dll", SetLastError = true)]
+    public static extern bool SetProcessDpiAwarenessContext(IntPtr value);
+
+    [DllImport("user32.dll", SetLastError = true)]
     public static extern uint GetWindowThreadProcessId(IntPtr hWnd, out uint processId);
 
     [DllImport("user32.dll", SetLastError = true, CharSet = CharSet.Unicode)]
@@ -90,6 +96,16 @@ function Get-WindowRecord {
 
 function Save-Screenshot {
     param([string]$Directory)
+
+    # Without DPI awareness, Windows can give a PowerShell process logical
+    # (scaled-down) display bounds instead of native physical pixels. Per-monitor
+    # V2 is available on current Windows releases; fall back for older systems.
+    try {
+        [void][ForegroundWindowApi]::SetProcessDpiAwarenessContext([IntPtr](-4))
+    }
+    catch [System.EntryPointNotFoundException] {
+        [void][ForegroundWindowApi]::SetProcessDPIAware()
+    }
 
     Add-Type -AssemblyName System.Drawing
     Add-Type -AssemblyName System.Windows.Forms

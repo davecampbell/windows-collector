@@ -57,5 +57,6 @@ Window titles and screenshots may contain passwords, messages, customer informat
 - It enumerates visible top-level windows that expose a nonempty title bar. Background processes and apps without a normal top-level window are not included.
 - The `is_foreground` field identifies the one keyboard-active window when one is available.
 - It uses the virtual desktop, so a screenshot includes all monitors.
+- The collector requests per-monitor DPI awareness before capture so screenshots use native physical pixels rather than Windows display-scaling dimensions.
 - Screen capture is best-effort: activity data is still emitted if a capture fails.
 - The default schedule captures at minute 00, 15, 30, and 45 of each hour. This is deliberately simple and avoids maintaining state.
