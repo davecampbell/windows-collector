@@ -53,7 +53,7 @@ foreground-window.ps1  → C:\ProgramData\Telegraf\scripts\foreground-window.ps1
 telegraf-activity.conf → C:\Program Files\InfluxData\telegraf\telegraf.d\activity.conf
 ```
 
-Create the `telegraf.d` folder if it does not exist. Edit `activity.conf` to use your selected local spool or UNC path. Use a UNC path such as `\\fileserver\EndpointTelemetry\...`; do not use a mapped drive letter.
+Create the `telegraf.d` folder if it does not exist. `activity.conf` includes a local file output at `C:\ProgramData\Telegraf\spool\telemetry\activity.lp`, so Telegraf has a valid output from the first run. Edit or add an output later for your selected local spool, UNC path, or central system. Use a UNC path such as `\\fileserver\EndpointTelemetry\...`; do not use a mapped drive letter.
 
 ## 4. Test the PowerShell collector interactively
 
@@ -81,6 +81,16 @@ From the Telegraf installation directory, run Telegraf once with its main config
 ```
 
 `--test` prints collected metrics but does not send them to configured outputs. Fix configuration or script errors before scheduling it. Telegraf expects UTF-8 configuration files.
+
+For a normal, continuous run, include the same configuration directory:
+
+```powershell
+& .\telegraf.exe `
+  --config '.\telegraf.conf' `
+  --config-directory '.\telegraf.d'
+```
+
+If Telegraf reports `no outputs found`, it loaded a configuration without any enabled `[[outputs.*]]` table. Confirm `telegraf.d\activity.conf` is present and that `--config-directory '.\telegraf.d'` is included. A configuration used for a normal run must have at least one input and one output; `--test` is the exception.
 
 ## 6. Run it in the interactive user session
 

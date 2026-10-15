@@ -10,8 +10,8 @@ This package records every visible top-level window with a nonempty title bar on
 ## Quick start
 
 1. Copy `foreground-window.ps1` to `C:\ProgramData\Telegraf\scripts\foreground-window.ps1`.
-2. Copy `telegraf-activity.conf` to Telegraf's configuration directory and configure an output in your normal Telegraf configuration.
-3. Create `C:\ProgramData\Telegraf\screen-captures` and restrict it to the intended account and administrators.
+2. Copy `telegraf-activity.conf` to Telegraf's `telegraf.d` configuration directory. It includes a local telemetry-spool output at `C:\ProgramData\Telegraf\spool\telemetry\activity.lp`.
+3. Create `C:\ProgramData\Telegraf\screen-captures` and `C:\ProgramData\Telegraf\spool\telemetry`, and restrict them to the intended account and administrators.
 4. Run the collector in the signed-in user's session. A standard Windows service runs outside that interactive session and will not reliably see the foreground window or capture the display. A practical approach is a Scheduled Task set to **Run only when user is logged on**, started at logon, that launches a user-scoped Telegraf instance with this config.
 5. Test the script interactively before deploying:
 
@@ -20,6 +20,12 @@ This package records every visible top-level window with a nonempty title bar on
    ```
 
 The command emits one JSON object. Telegraf's `inputs.exec` input parses it every minute.
+
+When starting Telegraf, include its configuration directory as well as the main configuration file. The collector definition and its output are stored in `telegraf.d`:
+
+```powershell
+.\telegraf.exe --config '.\telegraf.conf' --config-directory '.\telegraf.d'
+```
 
 ## Data handling
 
